@@ -1,15 +1,18 @@
 package com.cos.myblog.model;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -40,9 +43,13 @@ public class Board {
 	@ColumnDefault("0")
 	private int count;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="userId")
 	private User user;
+	
+	//게시글 당 댓글이 한개가 아니라 여러건이므로 컬렉션이 돼야 함
+	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER)
+	private List<Reply> reply;
 	
 	@CreationTimestamp //인서트 업데이트일때 현재 시간이 자동으로 들어감
 	private Timestamp createDate; 

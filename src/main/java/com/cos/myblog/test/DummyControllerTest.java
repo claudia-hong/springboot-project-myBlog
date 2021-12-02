@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import javax.persistence.GeneratedValue;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cos.myblog.model.RoleType;
@@ -25,6 +28,27 @@ public class DummyControllerTest {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Transactional
+	@PutMapping("/dummy/user/{id}")
+	public User updateUser(@PathVariable int id, @RequestBody User requestUser) {
+		
+		System.out.println("id:"+id);
+		System.out.println("email:"+requestUser.getEmail());
+		System.out.println("password:"+requestUser.getPassword());
+		
+		User user = userRepository.findById(id).orElseThrow(()->{
+			return new IllegalArgumentException("업데이트에 실패하였습니다.");
+		});
+		
+		user.setPassword(requestUser.getPassword());
+		user.setEmail(requestUser.getEmail());
+		
+		//userRepository.save(user);
+		
+		return null;
+		
+	}
+	
 	@GetMapping("/dummy/users")
 	public List<User> list(){
 		return userRepository.findAll();
@@ -34,10 +58,10 @@ public class DummyControllerTest {
 	@GetMapping("/dummy/user")
 	public List<User> pageList(@PageableDefault(size=2, sort="id",direction = Direction.DESC) Pageable pageable ){
 		
-		List<User> users = userRepository.findAll(pageable).getContent();
+		Page<User> pagingUser = userRepository.findAll(pageable);
+		List<User> users = pagingUser.getContent();
 		
 		return users;
-
 	}
 	
 	@GetMapping("/dummy/user/{id}")

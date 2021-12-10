@@ -11,13 +11,22 @@ let index = {
 				username : $("#username").val(),
 				password : $("#password").val(),
 				email : $("#email").val()
-			}
-			
+			};
 			//console.log(data);
 			
-			$.ajax().done().fail();
-			
-			
+			$.ajax({
+				type: "POST",
+				url: "/blog/api/user",
+				data: JSON.stringify(data),
+				contentType: "application/json;charset=utf-8", 
+				dataType: "json"
+			}).done(function(resp){
+				alert("회원가입이 완료되었습니다.");
+				//console.log(resp);
+				location.href="/blog";
+			}).fail(function(){
+				JSON.stringify(error);
+			});
 		}
 }
 
